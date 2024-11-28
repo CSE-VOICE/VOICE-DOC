@@ -1451,5 +1451,592 @@ TBD
     \end{enumerate}
 \end{enumerate}
 
+\vspace{1em} % Indent between sections
+
+% Section 5 : Architecture Design
+\section{Architecture Design}
+
+% Subsection 5-A : Overall Architecture
+\subsection{Overall Architecture}
+\vspace{0.5em}
+
+\begin{figure} [h!]
+	\centering
+	\includegraphics[width=\linewidth]{VOICE-Architecture.png}
+	\caption{Overall Architecture}
+	\label{fig:Overall Architecture}
+\end{figure}
+
+VOICE users interact with our system through the Frontend application or NUGU interface. To achieve this, the system consists of 3 main modules: Frontend, Backend, and AI server.
+
+The first module is “Frontend,” developed with React Native and JavaScript. It provides the main user interface and integrates NUGU for voice command capabilities, allowing users to interact through both text and voice inputs.
+
+The second module is “Backend,” built with Node.js and Express on AWS EC2, using MySQL for data storage. It manages user authentication, device configurations, and routine data while coordinating component communications. The database stores essential data including user information, real-time device status, and history of accepted/executed routines for pattern analysis and personalization.
+
+The third module is “AI Server,” using FastAPI on AWS EC2. This server processes voice and emotion analysis by integrating multiple AI services: Hume AI analyzes emotional patterns, Claude structures data into standardized formats for system processing, and Google Cloud Speech API handles voice-to-text conversion. The AI Server manages these services to provide comprehensive voice and emotion analysis capabilities.
+
+To ensure system reliability and performance, we implemented standardized API endpoints with robust error handling, monitoring, and logging capabilities across all components.
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 5-B : Directory Organization
+\subsection{Directory Organization}
+\vspace{0.5em}
+
+\begin{figure} [h!]
+	\centering
+	\includegraphics[width=\linewidth]{VOICE-filestructure.png}
+	\caption{Directory Organization}
+	\label{fig:Directory Organization}
+\end{figure}
+
+% Frontend-1
+\begin{table} [htp]
+    \caption{Directory Organization-Frontend 1}
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{|p{1.7cm}|p{3.0cm}|p{2.6cm}|}
+    \hline
+    \textit{\textbf{Directory}} & \textit{\textbf{File / Folder Name}} & \textit{\textbf{Modules used}} \\
+     \hline
+        VOICE-FE & .gitignore\newline app.json\newline App.jsx\newline babel.config.js\newline eas.json\newline index.js\newline metro.config.js\newline package-lock.json\newline package.json\newline README.md & expo-font\newline expo-status-bar\newline react\newline react-native\newline react-native-gesture-handler\newline react-redux\newline @expo/vector-icons\newline @react-native-async-storage/async-storage\newline @react-navigation/bottom-tabs\newline @react-navigation/native\newline @react-navigation/stack \\ 
+    \hline
+        VOICE-FE\newline /ios & Podfile & cocoapods\newline expo-modules-autolinking\newline react-native\newline NuguClientKit\newline NuguLoginKit\newline NuguCore\newline NuguAgents \\
+    \hline
+        VOICE-FE\newline /ios/front & Info.plist\newline nugu-config.plist\newline front-Bridging-Header.h\newline NuguBridge.m\newline NuguBridge.swift\newline NuguConfiguration.swift & OAuthServerUrl\newline OAuthClientId\newline OAuthClientSecret\newline PoCId\newline DeviceTypeCode\newline React/\newline RCTBridgeModule.h\newline React/\newline RCTEventEmitter.h\newline Foundation\newline NuguClientKit\newline NuguLoginKit\newline NuguCore\newline NuguAgents\newline AVFoundation\newline NuguServiceKit\newline Foundation \\
+    \hline 
+        VOICE-FE\newline /screens & LoadPage.jsx\newline MainPage.jsx & react\newline react-native\newline Platform\newline @expo/vector-icons\newline @react-native-async-storage/async-storage \\
+    \hline
+        VOICE-FE\newline /screens\newline AiPick & AiPick.jsx\newline AiPickStack.jsx\newline recommendation.jsx & react\newline react-native\newline react-redux\newline @react-native-async-storage/async-storage\newline @react-navigation/native\newline @react-navigation/stack \\
+    \hline
+        VOICE-FE\newline /screens\newline Appliance & Appliance.jsx\newline ApplianceDetail.jsx\newline ApplianceStack.jsx & react\newline react-native\newline react-redux\newline @react-navigation/native\newline @expo/vector-icons\newline @react-navigation/stack \\
+    \hline
+    \end{tabular}
+\end{table}
+
+
+% Frontend-2
+\begin{table} [htp]
+    \caption{Directory Organization-Frontend 2}
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{|p{1.7cm}|p{3.0cm}|p{2.6cm}|}
+    \hline
+    \textit{\textbf{Directory}} & \textit{\textbf{File / Folder Name}} & \textit{\textbf{Modules used}} \\
+    \hline
+        VOICE-FE\newline /screens\newline Auth & Login.jsx\newline SignUp.jsx & expo-auth-session\newline expo-web-browser\newline react\newline react-native\newline react-redux \\
+    \hline
+        VOICE-FE\newline /screens\newline /Mypage & ChangePassword.jsx\newline MyPage.jsx\newline MyPageAI.jsx\newline MyPageInfo.jsx\newline MyPageRoutine.jsx\newline MyPageRoutineDetail.jsx\newline MyPageStack.jsx & react\newline react-native\newline react-redux\newline @expo/vector-icons\newline @react-navigation/stack \\
+    \hline
+        VOICE-FE\newline /redux & store.jsx & @reduxjs/toolkit \\
+    \hline 
+        VOICE-FE\newline /redux\newline /slices & applianceSlice.jsx\newline authSlice.jsx\newline routineSlice.jsx\newline speakerSlice.jsx & react-redux\newline @reduxjs/toolkit\newline @react-native-async-storage/async-storage\newline @reduxjs/toolkit \\ 
+    \hline
+        VOICE-FE\newline /components & GradientBackground.jsx & expo-linear-gradient\newline react-native \\
+    \hline
+        VOICE-FE\newline /redux & store.jsx & @reduxjs/toolkit \\
+    \hline 
+        VOICE-FE\newline /redux\newline /slices & applianceSlice.jsx\newline authSlice.jsx\newline routineSlice.jsx\newline speakerSlice.jsx & react-redux\newline @reduxjs/toolkit\newline @react-native-async-storage/async-storage\newline @reduxjs/toolkit \\ 
+    \hline
+        VOICE-FE\newline /components & GradientBackground.jsx & expo-linear-gradient\newline react-native \\
+    \hline
+        VOICE-FE\newline /components\newline /ui & button.jsx\newline DatePickerModal.jsx\newline input.jsx\newline loading-overlay.jsx & react\newline react-native\newline @react-native-community\newline /datetimepicker \\ 
+    \hline
+        VOICE-FE\newline /src & NuguModule.js & react-native \\
+    \hline
+        VOICE-FE\newline /src/api & config.js & \\
+    \hline 
+        VOICE-FE\newline /styles & authStyle.jsx\newline typography.js & react-native \\
+    \hline
+        VOICE-FE\newline /assets & logov1.png\newline backgroundimg2.png & \\
+    \hline
+        VOICE-FE\newline /assets/fonts\newline /LG-EI\_font\newline \_all/TTF & LGEIHeadlineTTF\newline LGEITextTTF-Bold\newline LGEITextTTF-Light\newline LGEITextTTF-Regular\newline LGEITextTTF-SemiBold\newline LGEIHeadlineVF\newline LGEITextTTF-Bold & \\
+    \hline
+    \end{tabular}
+\end{table}
+
+% Backend
+\begin{table} [htp]
+    \caption{Directory Organization-Backend}
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{|p{1.7cm}|p{3.0cm}|p{2.6cm}|}
+    \hline
+    \textit{\textbf{Directory}} & \textit{\textbf{File / Folder Name}} & \textit{\textbf{Modules used}} \\
+    \hline
+        VOICE-BE & node\_modules\newline src\newline .gitignore\newline README.md\newline package-lock.json\newline package.json & axios\newline bcryptjs\newline cors\newline dotenv\newline express\newline express-session\newline ffmpeg-static\newline fluent-ffmpeg\newline morgan\newline multer\newline mysql2\newline sequelize\newline nodemon \\
+    \hline
+        VOICE-BE\newline /src/controllers & ai-pick.controller.js\newline appliance.controller.js\newline auth.controller.js\newline index.js\newline mypage.controller.js\newline voice.controller.js & express\newline sequelize\newline axios\newline bcryptjs\newline fluent-ffmpeg\newline ffmpeg-static\newline fs \\
+    \hline
+        VOICE-BE\newline /src/models & ai-speaker.model.js\newline appliance.model.js\newline index.js\newline routine-history.model.js\newline user.model.js & sequelize\newline dotenv \\
+    \hline
+        VOICE-BE\newline /src/routes & ai-pick.routes.js\newline appliance.routes.js\newline auth.routes.js\newline index.js\newline mypage.routes.js\newline voice.routes.js & express\newline multer\newline path\newline fs \\
+    \hline 
+        VOICE-BE\newline /src & app.js & express\newline sequelize\newline express-session\newline cors\newline morgan\newline dotenv \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\clearpage
+% AI
+\begin{table} [htp]
+    \caption{Directory Organization-AI}
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{|p{1.7cm}|p{3.0cm}|p{2.6cm}|}
+    \hline
+    \textit{\textbf{Directory}} & \textit{\textbf{File / Folder Name}} & \textit{\textbf{Modules used}} \\
+    \hline
+        VOICE-AI & AI\_Server\newline Dataset\newline VOICE\_model\newline README.md\newline requirements.txt & \\
+    \hline
+        VOICE-AI\newline /AI\_Server & \_\_pycache\_\_\newline main.py\newline parsing\_routine.py & fastapi\newline pydantic\newline transformers\newline torch\newline langchain\_core.prompts\newline langchain\_core.output\_\newline parsers\newline langchain\_anthropic\newline dotenv\newline json \\
+    \hline
+        VOICE-AI\newline /Dataset & dataset\_construction\_\newline Bard.py\newline dataset\_construction\_\newline GPT.py\newline dataset\_construction\_\newline Llama.py\newline dataset\_construction\_\newline claude.py & langchain\_core.prompts\newline langchain\_core.output\_\newline parsers\newline langchain\_anthropic\newline dotenv\newline pandas\newline typing\newline langchain\_openai\newline langchain\_llama\newline google.cloud\newline hashlib\newline datetime\newline json \\
+    \hline
+        VOICE-AI\newline /VOICE\_model & LoRa\_train\_model.py\newline data\_preprocessing.py\newline predict\_model.py\newline train\_model.py & pandas\newline torch\newline tqdm\newline transformers\newline sklearn\newline os\newline peft \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 5-C : Frontend
+\subsection{Module 1: Frontend}
+\vspace{0.5em}
+
+\begin{enumerate}[label=\arabic*]
+    % Item 1
+    \item Purpose\par
+    \vspace{0.3em}
+    To develop VOICE, React Native was chosen as it supports both iOS and Android platforms as a cross-platform framework. It was selected for its ability to develop applications for both platforms with a single codebase, but later the decision was made to target only iOS applications. The main purpose of the frontend is to provide a user-friendly interface for smart home management. It supports both text and voice interaction, offering an intuitive multimodal experience for controlling smart devices and managing routines. Voice interaction includes features such as saving and displaying recommended routines provided by the speaker and adapting device operations based on the routines.
+
+    \vspace{1em}
+
+    % Item 2
+    \item Functionality\par
+    \vspace{0.3em}
+    The main functionalities of the frontend include user authentication and account management (sign-up, login), smart device registration and control interface, real-time device status monitoring and control, an interface for the AI-based recommendation system (AI's Pick), personal profile and routine management, AI speaker registration and management, and support for multimodal interaction.
+
+    \vspace{1em}
+
+    % Item 3
+    \item Location of source code:\par
+    \vspace{0.3em}
+    \href{https://github.com/CSE-VOICE/VOICE-FE}{https://github.com/CSE-VOICE/VOICE-FE}
+
+    \vspace{1em}
+
+    % Item 4
+    \item Class component\par
+    \vspace{0.3em}
+    
+    \begin{itemize}[label=-]
+        \item App.jsx: This file serves as the main entry point for the React Native-based mobile application. Developed using Expo, it utilizes key libraries like React Navigation, Redux, React Native Gesture Handler, and AsyncStorage to set up the application's fundamental structure.
+        \vspace{0.7em}
+        
+        \item NuguModule.js: This file acts as a bridge between React Native and the NUGU SDK, enabling voice recognition features on the iOS platform.
+        \vspace{0.7em}
+        
+        \item config.js: Simplifies API requests by providing reusable configurations.
+        \vspace{0.7em}
+        
+        \item redux folder: Contains files for managing application state.
+        \vspace{0.7em}
+        
+        \item applianceSlice.jsx: Manages the state of smart home appliances using Redux Toolkit. Handles actions such as loading device lists, updating device states, and power control.
+        \vspace{0.7em}
+        
+        \item authSlice.jsx: Manages the state for user authentication, including sign-up, login, and Google login, using Redux Toolkit.
+        \vspace{0.7em}
+        
+        \item routineSlice.jsx: Manages routines and AI recommendations using Redux Toolkit. Handles user routine data and interactions with AI-recommended routines.
+        \vspace{0.7em}
+        
+        \item speakerSlice.jsx: Manages speaker-related functionalities, such as connecting to AI speakers, using Redux Toolkit.
+        \vspace{0.7em}
+        
+        \item store.jsx: Configures the Redux store for state management.
+        \vspace{0.7em}
+        
+        \item screens folder: Contains files for individual screens and their components.
+        \vspace{0.7em}
+        
+        \item LoadPage.jsx: Displays a loading screen after successful login and before navigating to the main page.
+        \vspace{0.7em}
+        
+        \item MainPage.jsx: The primary screen of the VOICE application. Displays current air quality if an air purifier is connected.
+        \vspace{0.7em}
+        
+        \item AiPick.jsx: Allows users to input situations and send them to the backend for processing.
+        \vspace{0.7em}
+        
+        \item AiPickStack.jsx: Defines stack navigation for the AI Pick feature.
+        \vspace{0.7em}
+
+        \item recommendation.jsx: Displays routine recommendations fetched from the backend in JSON format.
+        \vspace{0.7em}
+
+        \item Appliance.jsx: Shows the list of registered devices and their operational status, along with device registration options.
+        \vspace{0.7em}
+
+        \item ApplianceDetail.jsx: Provides control options for individual appliances.
+        \vspace{0.7em}
+
+        \item ApplianceStack.jsx: Defines stack navigation for appliance-related pages.
+        \vspace{0.7em}
+
+        \item Login.jsx: The login page for VOICE.
+        \vspace{0.7em}
+
+        \item SignUp.jsx: The sign-up page for VOICE.
+        \vspace{0.7em}
+
+        \item MyPage.jsx: The My Page section for VOICE users.
+        \vspace{0.7em}
+
+        \item MyPageAI.jsx: Allows users to connect AI speakers.
+        \vspace{0.7em}
+
+        \item MyPageInfo.jsx: Displays the user's personal information.
+        \vspace{0.7em}
+
+        \item MyPageRoutine.jsx: Lists routines accepted by the user.
+        \vspace{0.7em}
+
+        \item MyPageRoutineDetail.jsx: Provides detailed information about a routine and options to re-execute it.
+        \vspace{0.7em}
+
+        \item MyPageStack.jsx: Defines stack navigation for Mypage. 
+        \vspace{0.7em}
+
+        \item nugu-config.plist: This is an iOS Property List (.plist) file that contains configuration details and settings required for the application at runtime. It defines NUGU SDK-related authentication and connection information.
+        \vspace{0.7em}
+
+        \item NuguBridge.swift: Implements an iOS native module to integrate NUGU SDK for voice recognition and keyword detection with React Native. It processes voice data and sends voice commands to the React Native application.
+        \vspace{0.7em}
+
+        \item NuguBridge.m: An Objective-C header file that connects React Native with iOS native modules.
+        \vspace{0.7em}
+
+        \item front-Bridging-Header.h: Used for bridging between React Native and iOS native code (Swift). It enables React Native to call iOS native methods.
+        \vspace{0.7em}
+
+        \item NuguConfiguration.swift: Defines the NuguConfiguration struct, which stores authentication and configuration information related to the NUGU SDK. It centralizes settings for communication with the NUGU server and SDK initialization.
+        \vspace{0.7em}
+
+        \item Podfile: Configures iOS platform dependencies using CocoaPods. It ensures proper integration of React Native and NUGU SDK, along with managing necessary libraries and build settings.
+    \end{itemize}
+
+    \vspace{1em}
+
+\end{enumerate}
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 5-D : Backend
+\subsection{Module 2: Backend}
+\vspace{0.5em}
+
+\begin{enumerate}[label=\arabic*]
+    % Item 1
+    \item Purpose\par
+    \vspace{0.3em}
+    The primary purpose of the backend is to enable smart home device control through optimal routine recommendations. It stores user data, appliance status, and executed routines in a MySQL database using Sequelize ORM, while providing secure API endpoints for frontend interactions. Built using Node.js and Express, it processes voice commands, manages device states in real-time, and integrates with AI server for personalized routine recommendations. 
+
+    \vspace{1em}
+
+    % Item 2
+    \item Functionality\par
+    \vspace{0.3em}
+
+    \begin{enumerate}[label=\arabic*)]   
+        % Item 2-1)
+        \item Authentication Management\par
+        \vspace{0.3em}
+        Implements user registration and login with bcrypt password encryption. Processes both local and SNS (Social Networking Service) authentication through session-based security.
+
+        \vspace{1em}
+
+        % Item 2-2)
+        \item Device Management\par
+        \vspace{0.3em}
+        Manages real-time device operations including power control and state monitoring. Provides APIs for device registration, status updates, and synchronization across the system.
+
+        \vspace{1em}
+
+        % Item 2-3)
+        \item AI Routine Management\par
+        \vspace{0.3em}
+        Processes user situations through ML server communication, handles routine recommendations with session storage, and manages user responses (accept/reject/refresh).
+
+        \vspace{1em}
+
+        % Item 2-4)
+        \item Routine History\par
+        \vspace{0.3em}
+        Records and manages user's executed routines with searchable functionality. Enables replay of previous routines with exact device states and configurations.
+
+        \vspace{1em}
+
+        % Item 2-5)
+        \item Voice Processing\par
+        \vspace{0.3em}
+        Converts voice command files from m4a to wav format using ffmpeg. Implements organized file storage with year/month-based directory structure.
+    \end{enumerate}
+
+    \vspace{1em}
+
+    % Item 3
+    \item Location of source code:\par
+    \vspace{0.3em}
+    \href{https://github.com/CSE-VOICE/VOICE-BE}{https://github.com/CSE-VOICE/VOICE-BE}
+
+    \vspace{1em}
+
+    % Item 4
+    \item Class component\par
+    \vspace{0.3em}
+
+    \begin{itemize}[label=-]
+        \item controllers folder: Implements core application logic
+        \vspace{0.7em}
+
+        \item ai-pick.controller.js: Manages routine recommendations through ML server integration. Handles session-based recommendation storage, user responses, and ML server interaction via axios for routine generation, acceptance, rejection, and refresh requests.
+        \vspace{0.7em}
+
+        \item appliance.controller.js: Controls device operations through comprehensive CRUD operations. Manages real-time device states, power control, bulk updates, and state synchronization. Implements error handling and validation for device operations.
+        \vspace{0.7em}
+
+        \item auth.controller.js: Handles user authentication with bcrypt password encryption. Processes local login/signup and validates user credentials. Implements email duplication checks and secure password storage.
+        \vspace{0.7em}
+
+        \item mypage.controller.js: Manages user routine history with search functionality. Handles routine execution requests, provides numbering for display order, and implements routine deletion. Uses Sequelize queries for efficient data retrieval.
+        \vspace{0.7em}
+
+        \item voice.controller.js: Processes voice command files using ffmpeg. Converts m4a files to wav format and manages hierarchical file storage. Implements error handling for file processing failures.
+        \vspace{0.7em}
+
+        \item index.js: Consolidates controller exports for modular access.
+        \vspace{0.7em}
+
+        \item models folder: Database schema and relationship definitions
+        \vspace{0.7em}
+
+        \item user.model.js: Defines user schema with email validation and password encryption. Includes fields for authentication type and social login integration.
+        \vspace{0.7em}
+
+        \item appliance.model.js: Specifies device schema with state tracking fields. Includes status monitoring, power state, and device metadata management.
+        \vspace{0.7em}
+
+        \item routine-history.model.js: Structures routine execution records. Contains fields for situation text, executed routines, and device state changes.
+        \vspace{0.7em}
+
+        \item index.js: Initializes Sequelize models and defines relationships. Sets up MySQL connection and model associations.
+        \vspace{0.7em}
+
+        \item routes folder: API endpoint definitions
+        \vspace{0.7em}
+
+        \item ai-pick.routes.js: Routes for ML routine recommendations. Endpoints for recommendation requests, retrieval, acceptance, rejection, and refresh.
+        \vspace{0.7em}
+
+        \item appliance.routes.js: Device management endpoints. Handles device listing, status updates, power control, and bulk updates.
+        \vspace{0.7em}
+
+        \item auth.routes.js: Authentication route definitions. Manages signup, login, and session handling paths.
+        \vspace{0.7em}
+
+        \item mypage.routes.js: Personal data and routine history routes. Endpoints for routine listing, execution, and deletion.
+        \vspace{0.7em}
+
+        \item voice.routes.js: Voice processing endpoints. Configures multer for file uploads and audio conversion routes.
+        \vspace{0.7em}
+
+        \item index.js: app.js: Express application setup. Configures middleware, session handling, CORS, error management, and database connection initialization.
+    \end{itemize}
+\end{enumerate}
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 5-E : AI
+\subsection{Module 3: AI}
+\vspace{0.5em}
+
+\begin{enumerate}[label=\arabic*]
+    % Item 1
+    \item Purpose\par
+    \vspace{0.3em}
+    The VOICE-AI module is designed to provide smart home routine recommendations based on user’s input situation. This module utilizes state-of-the-art AI and natural language processing techniques to analyze user situations and generate actionable routines for smart home devices. By integrating cutting-edge AI models and a fine-tuned recommendation engine, this module ensures an intuitive, context-aware user experience.
+    
+    \vspace{1em}
+
+    % Item 2
+    \item Functionality\par
+    \vspace{0.3em}
+
+    \begin{enumerate}[label=\arabic*)]   
+        % Item 2-1)
+        \item Routine Parsing and Recommendation\par
+        \vspace{0.3em}
+        Processes user inputs (via text or voice) to generate and recommend personalized smart home routines.
+
+        \vspace{1em}
+
+        % Item 2-2)
+        \item Model Training and Fine-Tuning\par
+        \vspace{0.3em}
+        Includes scripts to preprocess datasets, and fine-tune the model using LoRA (Low-Rank Adaptation) for efficient performance.
+
+        \vspace{1em}
+
+        % Item 2-3)
+        \item Prediction\par
+        \vspace{0.3em}
+        Generates real-time routine predictions based on user-provided situations and test the performance.
+
+        \vspace{1em}
+
+        % Item 2-4)
+        \item Dataset Management\par
+        \vspace{0.3em}
+        Provides tools for preprocessing and handling datasets used for training and validation.
+
+        \vspace{1em}
+
+        % Item 2-5)
+        \item Dataset Generation\par
+        \vspace{0.3em}
+        Generates a dataset that covers a wide range of situations, from everyday to specific scenarios, providing detailed contexts and corresponding routines using state-of-the-art generative AI models.
+    \end{enumerate}
+
+    \vspace{1em}
+
+    % Item 3
+    \item Location of source code:\par
+    \vspace{0.3em}
+    \href{https://github.com/CSE-VOICE/VOICE-AI}{https://github.com/CSE-VOICE/VOICE-AI}
+
+    \vspace{1em}
+
+    % Item 4
+    \item Class component\par
+    \vspace{0.3em}
+
+    \begin{itemize}[label=-]
+        \item AI\_Server folder: Handles backend API services for routine generation and parsing.
+        \vspace{0.7em}
+
+        \item main.py: Main FastAPI server script, managing API endpoints for routine generation.
+        \vspace{0.7em}
+
+        \item parsing\_routine.py: Handles parsing of user inputs and interacts with the AI model to generate routines.
+        \vspace{0.7em}
+
+        \item VOICE\_model folder: Contains training scripts, data preprocessing utilities, and prediction pipelines using transformer-based models.
+        \vspace{0.7em}
+
+        \item LoRA\_train\_model.py: Implements LoRA-based fine-tuning for efficient model adaptation.
+        \vspace{0.7em}
+
+        \item data\_preprocessing.py: Prepares and preprocesses datasets for training.
+        \vspace{0.7em}
+
+        \item predict\_model.py: Handles model inference for routine prediction.
+        \vspace{0.7em}
+
+        \item train\_model.py: Script for training and validating the AI model.
+        \vspace{0.7em}
+
+        \item Dataset folder: Contains scripts for generating dataset that covers diverse situations and corresponding routines for fine-tuning the model.
+        \vspace{0.7em}
+
+        \item dataset\_construction\_Bard.py: A Python script for constructing datasets using Bard, designed to generate diverse scenarios and their corresponding routines with reliability.
+        \vspace{0.7em}
+
+        \item dataset\_construction\_GPT.py: A Python script for constructing datasets using GPT, designed to generate diverse scenarios and their corresponding routines with reliability.
+        \vspace{0.7em}
+
+        \item dataset\_construction\_Llama.py: A Python script for constructing datasets using Llama, designed to generate diverse scenarios and their corresponding routines with reliability.
+        \vspace{0.7em}
+
+        \item dataset\_construction\_Claude.py: A Python script for constructing datasets using Claude, designed to generate diverse scenarios and their corresponding routines with reliability.
+        \vspace{0.7em}        
+    \end{itemize}
+\end{enumerate}
+
+\vspace{1em} % Indent between sections
+
+% Section 6 : Use Cases
+\section{Use Cases}
+
+% Subsection 6-A : Loading
+\subsection{Loading}
+\vspace{0.5em}
+A Loading Page is the initial screen users encounter when launching the app. This screen remains visible only during the preparation of essential components required for the app's operation, and transitions automatically to the subsequent screen once initialization is complete. 
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 6-B : Login
+\subsection{Login}
+\vspace{0.5em}
+A Login Page provides users with access to their accounts by verifying their credentials through ID and password authentication, while also offering the option to sign in using their Google account.
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 6-C : Sign up
+\subsection{Sign Up}
+\vspace{0.5em}
+Users can register by entering their basic information: name, email address, phone number, and password. After completing the registration form, they will be taken to the login screen where they can begin using their new account.
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 6-D : Main page
+\subsection{Main Page}
+\vspace{0.5em}
+A Home screen provides essential environmental data from your air purifier, displaying real-time information about your home's temperature, humidity, and fine dust levels. Users can also access the device registration feature to add new appliances to their system.
+\vspace{0.5em}
+
+1) Users should be able to select the following options: Skip to sign up or continue tutorial.
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 6-E : AI's pick
+\subsection{AI's Pick}
+\vspace{0.5em}
+When users tap the “AI's Pick” section from the Home screen, they are directed to a new page where they can input specific situations or scenarios. After entering their desired conditions, they can proceed by selecting the confirmation button to receive AI-generated recommendations.
+\vspace{0.5em}
+
+1) When users press the confirmation button, they are taken to a recommendation page that displays their inputted situation along with suggested routines. This page also shows the specific devices that would be involved in the recommended automation. If users aren't satisfied with the suggested routine, they can request an alternative recommendation by using the “Recommend Again” button to receive different suggested routines.
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 6-F : Device management
+\subsection{Device Management}
+\vspace{0.5em}
+When users access the Device Management section, they are directed to a control hub where they can add new appliances to their system and manage their existing devices. This interface allows users to both integrate new devices and control their registered appliances through basic operations such as turning them on or off.
+\vspace{0.5em}
+
+1) Selecting a registered device reveals a status screen that displays its current operational state, complemented by intuitive control buttons that allow users to remotely power the device on or off.
+
+\vspace{0.7em} % Indent between subsections
+
+% Subsection 6-G : Mypage
+\subsection{Mypage}
+\vspace{0.5em}
+Users accessing the Mypage section are directed to a settings hub where they can view their personal information, browse their saved routines collection, configure AI speaker settings, and access the logout option.
+\vspace{0.5em}
+
+1) Personal Information: Personal Information displays the user's name, email address, and phone number, along with a button that enables password modification.
+\vspace{0.5em}
+
+2) Routine Collection: Routines Collection reveals all created and accepted routines in chronological order, displaying the most recent routine histories first. 
+\vspace{0.5em}
+
+3) Routine Selection: Selecting any of the routines in routine collection page displays the scenario, routine description, and device adjustments, with buttons available to execute the routine or remove it from the collection.
+\vspace{0.5em}
+
+4) AI Speaker: Selecting the AI Speaker option shows currently registered speakers and provides a button to connect new speaker devices.
+\vspace{0.5em}
+
+5) Logout: Selecting the logout option enables users to securely sign out of their account.
 
 \end{document}
